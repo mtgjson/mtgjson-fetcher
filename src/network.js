@@ -7,7 +7,7 @@ const configPath = path.join(__dirname, '..', 'config.json');
 
 const defaultOptions = {
   redis: {
-    active: true,
+    active: false,
     host: '127.0.0.1',
     port: 6379,
     timeout: 7 * 24 * 60 * 60,  // in seconds. Defaults to one week.
@@ -101,7 +101,7 @@ export const initNetwork = (options = {}) => {
       // TODO: This will not work with nested keys.
       configData = {
         ...defaultOptions,
-        ...configData,
+        ...parsedData,
         ...options,
       };
 

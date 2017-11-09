@@ -1,5 +1,10 @@
 {
   "redis": {
-    "active": false
+    "active": false,
+    "host": "127.0.0.1",
+    "port": 6379,
+    "timeout": 604800,
+    "ignoreTimeout": false,
+    "ignoreCache": false
   }
 }
