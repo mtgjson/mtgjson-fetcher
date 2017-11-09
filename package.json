@@ -1,0 +1,40 @@
+{
+  "name": "mtgjson",
+  "version": "4.0.0",
+  "license": "MIT",
+  "babel": {
+    "presets": [
+      "env"
+    ],
+    "plugins": [
+      "transform-object-rest-spread"
+    ]
+  },
+  "eslintConfig": {
+    "parserOptions": {
+      "sourceType": "module",
+      "ecmaVersion": 6,
+      "ecmaFeatures": {
+        "experimentalObjectRestSpread": true
+      }
+    }
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "eslint": "^4.10.0"
+  },
+  "dependencies": {
+    "async": "^2.6.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "cheerio": "^1.0.0-rc.2",
+    "node-fetch": "^1.7.3",
+    "redis": "^2.8.0",
+    "uuid": "^3.1.0"
+  },
+  "scripts": {
+    "test": "eslint src/*.js",
+    "multiverseupdate": "babel-node src/update_with_id.js",
+    "fetchset": "babel-node src/fetch_set.js"
+  }
+}
