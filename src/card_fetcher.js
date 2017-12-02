@@ -76,12 +76,6 @@ export const fetchGathererCardList = (setName) => new Promise((accept, reject) =
 
           const printingElements = cheerio('.printings a', element);
 
-          // console.log(cardName);
-          // console.log(multiverseid);
-          // console.log(manaCost);
-          // console.log(type);
-          // console.log(numericalData);
-
           card.name = cardName;
           card.multiverseid = multiverseid;
           card.manaCost = manaCost;
@@ -109,6 +103,10 @@ export const fetchGathererCardList = (setName) => new Promise((accept, reject) =
               multiverseid,
               rarity,
             };
+
+            Object.keys(newCard).forEach(key => {
+              if (newCard[key] === null) delete newCard[key];
+            });
 
             cardList.push(newCard);
           });
@@ -150,7 +148,7 @@ const parseRightCol = (rightColElement) => {
   const cmcElement = extractElement('cmcRow');
   const cmc = cmcElement && parseInt(cmcElement.text().trim());
   const typeElement = extractElement('typeRow');
-  const type = typeElement.text().trim();
+  const type = typeElement.text().replace(/  /g, ' ').trim();
 
   const textElement = extractElement('textRow');
   const text = parseCardText(textElement);
@@ -183,7 +181,16 @@ const parseRightCol = (rightColElement) => {
   cardData.number = number;
   cardData.artist = artist;
 
-  return cardData;
+  // sort keys
+  const returnObject = {};
+  Object.keys(cardData).sort().forEach(key => {
+    const value = cardData[key];
+    if (value !== null) {
+      returnObject[key] = cardData[key];
+    }
+  });
+
+  return returnObject;
 };
 
 export const fetchMultiverseCard = multiverseid => new Promise((accept, reject) => {

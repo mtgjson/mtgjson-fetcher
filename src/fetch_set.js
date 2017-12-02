@@ -33,7 +33,7 @@ const loadFetchAndSave = setCode => {
       if (SET.data && SET.data.cards) {
         savedCards = SET.data.cards;
       }
-      
+
       SET_CONTENTS = {
         cards: [
           ...savedCards,
@@ -42,18 +42,24 @@ const loadFetchAndSave = setCode => {
       };
 
       cardList.forEach(cardEntry => {
-        let setCard = SET_CONTENTS.cards.find(card => {
-          return parseInt(card.multiverseid) == parseInt(cardEntry.multiverseid);
-        });
+        const setCard = SET_CONTENTS.cards.find(card => (
+          parseInt(card.multiverseid) == parseInt(cardEntry.multiverseid)
+        ));
 
         if (!setCard) {
-          setCard = {
+          const nextCard = {
             ...cardEntry,
             _id: uuid(),
           };
-          SET_CONTENTS.cards.push(setCard);
+
+          const cardToSave = {};
+          Object.keys(nextCard).sort().forEach(key => {
+            cardToSave[key] = nextCard[key];
+          })
+          SET_CONTENTS.cards.push(cardToSave);
+
         } else {
-          Object.keys(cardEntry).forEach(cardEntryKey => {
+          Object.keys(cardEntry).sort().forEach(cardEntryKey => {
             setCard[cardEntryKey] = cardEntry[cardEntryKey];
           });
         }
@@ -62,6 +68,7 @@ const loadFetchAndSave = setCode => {
       SET_CONTENTS.cards = SET_CONTENTS.cards.sort((a, b) => a.name.localeCompare(b.name));
     })
     .then(() => new Promise((accept, reject) => {
+      console.log(`Fetching individual data for ${SET_CONTENTS.cards.length} cards`);
       async.eachSeries(
         SET_CONTENTS.cards,
         (card, callback) => {
@@ -73,8 +80,22 @@ const loadFetchAndSave = setCode => {
                 card[key] = fetchedCard[key];
               });
 
-              callback();
-            });
+              return card;
+            })
+            .then(card => {
+              Object.keys(card).sort().forEach(key => {
+                const value = card[key];
+                delete card[key];
+                card[key] = value;
+              });
+
+              return card;
+            })
+            .catch(err => {
+              console.error('something went wrong');
+              console.error(err);
+            })
+            .then(() => callback());
         },
         accept
       );
@@ -93,7 +114,7 @@ const loadFetchAndSave = setCode => {
     }))
     .catch(err => {
       console.error(err);
-    });  
+    });
 };
 
 async.each(
