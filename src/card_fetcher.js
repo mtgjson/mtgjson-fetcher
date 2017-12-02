@@ -1,5 +1,6 @@
 import cheerio from 'cheerio';
 import { fetch } from './network';
+import parseCardText from './textparser';
 
 const buildPageListUrl = (setName, page = 1) => `http://gatherer.wizards.com/Pages/Search/Default.aspx?output=compact&page=${page}&set=%5b%22${setName.replace(/ /g, '+')}%22%5d`;
 const buildMultiverseUrl = (multiverseid, printed = false) => `http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=${multiverseid}&printed=${printed}`;
@@ -151,9 +152,10 @@ const parseRightCol = (rightColElement) => {
   const typeElement = extractElement('typeRow');
   const type = typeElement.text().trim();
 
-  // TODO: parse text
+  const textElement = extractElement('textRow');
+  const text = parseCardText(textElement);
   // TODO: parse flavour
-  
+
   // Extract multiverseid and set name
   const setElement = extractElement('currentSetSymbol', true);
   const setLinkElement = cheerio('a', setElement);
@@ -173,6 +175,7 @@ const parseRightCol = (rightColElement) => {
   cardData.name = cardName;
   if (manaCost) cardData.manaCost = manaCost;
   if (cmc) cardData.cmc = cmc;
+  cardData.text = text;
   cardData.multiverseid = multiverseid;
   cardData.type = type;
   cardData.set = setName;
